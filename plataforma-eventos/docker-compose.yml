@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - "0.0.0.0:3000:3000"  # Accesible desde cualquier IP
+    volumes:
+      # Volumen persistente para archivos subidos
+      - uploads_data:/app/public/uploads
+      # Volumen persistente para datos de la aplicación
+      - app_data:/app/data
+    environment:
+      - NODE_ENV=production
+      - HOSTNAME=0.0.0.0  # Permitir conexiones desde cualquier IP
+    restart: unless-stopped
+
+volumes:
+  uploads_data:
+    driver: local
+  app_data:
+    driver: local
