@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Link from 'next/link'
 import { ArrowLeft, Calendar, Clock, MapPin, Users, User, Phone, Mail, CheckCircle, Edit, Trash2, Flag, QrCode, Upload, FileText, Image, Video } from 'lucide-react'
 import InformeForm from '@/components/InformeForm'
+import InformeView from '@/components/InformeView'
 import QRCodeModal from '@/components/QRCodeModal'
 import PreguntasList from '@/components/PreguntasList'
 import { Event } from '@/lib/database'
@@ -159,59 +160,11 @@ export default function EventoDetailClient({
 
           {/* Informe del evento */}
           {event.informe && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <FileText className="h-5 w-5 mr-2" />
-                  Informe del Evento
-                </CardTitle>
-                <CardDescription>
-                  Subido el {new Date(event.informe.subidoEn).toLocaleDateString('es-ES')}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h3 className="font-medium mb-2">Resumen</h3>
-                  <p className="text-gray-600">{event.informe.resumen}</p>
-                </div>
-                
-                {event.informe.imagenes.length > 0 && (
-                  <div>
-                    <h3 className="font-medium mb-2">Imágenes ({event.informe.imagenes.length})</h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {event.informe.imagenes.map((imagen, index) => (
-                        <div key={index} className="relative">
-                          <img 
-                            src={imagen} 
-                            alt={`Imagen ${index + 1}`}
-                            className="w-full h-32 object-cover rounded-lg"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-                
-                {event.informe.videos.length > 0 && (
-                  <div>
-                    <h3 className="font-medium mb-2">Videos ({event.informe.videos.length})</h3>
-                    <div className="space-y-4">
-                      {event.informe.videos.map((video, index) => (
-                        <div key={index} className="relative">
-                          <video 
-                            src={video} 
-                            controls
-                            className="w-full rounded-lg"
-                          >
-                            Tu navegador no soporta el elemento video.
-                          </video>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <InformeView 
+              eventId={event.id}
+              informe={event.informe}
+              eventTitle={event.titulo}
+            />
           )}
 
           {/* Formulario de informe (solo si no está finalizado y es el dueño) */}
