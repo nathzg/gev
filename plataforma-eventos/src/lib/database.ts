@@ -45,6 +45,7 @@ export interface Event {
     cargo: string
   }>
   creadoPor: string
+  asignadoA?: string // ID del usuario asignado para finalizar el evento
   finalizado: boolean
   informe?: {
     resumen: string

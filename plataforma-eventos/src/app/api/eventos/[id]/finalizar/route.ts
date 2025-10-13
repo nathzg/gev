@@ -19,10 +19,14 @@ export async function POST(
       )
     }
 
-    // Solo el creador del evento puede finalizarlo
-    if (event.creadoPor !== session.id) {
+    // Solo el creador del evento, el usuario asignado o un admin pueden finalizarlo
+    const canFinalize = event.creadoPor === session.id || 
+                       event.asignadoA === session.id || 
+                       session.rol === 'admin'
+    
+    if (!canFinalize) {
       return NextResponse.json(
-        { success: false, message: 'Solo el creador del evento puede finalizarlo' },
+        { success: false, message: 'No tienes permisos para finalizar este evento' },
         { status: 403 }
       )
     }

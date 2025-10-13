@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -45,12 +45,45 @@ export default function NuevoEventoPage() {
     ubicacion: '',
     numeroConvocados: '',
     contactos: [{ id: '1', nombre: '', telefono: '', email: '' }],
-    autoridades: [{ id: '1', nombre: '', cargo: '' }]
+    autoridades: [{ id: '1', nombre: '', cargo: '' }],
+    asignadoA: '' // Campo para asignar el evento
   })
   
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [users, setUsers] = useState<Array<{id: string, nombre: string, apellido: string, email: string, rol: string}>>([])
+  const [currentUser, setCurrentUser] = useState<{id: string, rol: string} | null>(null)
   const router = useRouter()
+
+  // Cargar usuarios y información del usuario actual
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // Cargar información del usuario actual
+        const sessionResponse = await fetch('/api/auth/session')
+        if (sessionResponse.ok) {
+          const sessionData = await sessionResponse.json()
+          if (sessionData.success && sessionData.user) {
+            setCurrentUser(sessionData.user)
+            // Si es admin, cargar lista de usuarios para asignación
+            if (sessionData.user.rol === 'admin') {
+              const usersResponse = await fetch('/api/admin/usuarios')
+              if (usersResponse.ok) {
+                const usersData = await usersResponse.json()
+                if (usersData.success) {
+                  setUsers(usersData.users)
+                }
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error cargando datos:', error)
+      }
+    }
+
+    loadData()
+  }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -423,6 +456,30 @@ export default function NuevoEventoPage() {
                 ))}
               </div>
             </div>
+
+            {/* Asignación de Evento (solo para admins) */}
+            {currentUser?.rol === 'admin' && (
+              <div>
+                <Label htmlFor="asignadoA">Asignar evento a:</Label>
+                <select
+                  id="asignadoA"
+                  name="asignadoA"
+                  value={formData.asignadoA}
+                  onChange={handleChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="">Seleccionar usuario (opcional)</option>
+                  {users.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.nombre} {user.apellido} ({user.email}) - {user.rol}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-sm text-gray-500 mt-1">
+                  Si no seleccionas un usuario, el evento se asignará automáticamente a ti.
+                </p>
+              </div>
+            )}
 
             {/* Botones */}
             <div className="flex gap-4 pt-6">

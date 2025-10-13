@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
     const newEvent = await db.createEvent({
       ...eventData,
       creadoPor: session.id,
+      asignadoA: eventData.asignadoA || session.id, // Si no se asigna, se asigna al creador
       finalizado: false
     })
 

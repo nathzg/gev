@@ -25,8 +25,12 @@ export async function POST(
       )
     }
 
-    // Solo el dueño del evento puede subir el informe
-    if (event.creadoPor !== session.id) {
+    // Solo el creador del evento, el usuario asignado o un admin pueden subir el informe
+    const canUploadReport = event.creadoPor === session.id || 
+                           event.asignadoA === session.id || 
+                           session.rol === 'admin'
+    
+    if (!canUploadReport) {
       return NextResponse.json(
         { success: false, message: 'No tienes permisos para subir el informe de este evento' },
         { status: 403 }

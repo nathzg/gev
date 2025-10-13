@@ -121,6 +121,13 @@ export default async function EventosPage() {
                     Creado por: {getCreatorName(event.creadoPor)}
                   </div>
                   
+                  {event.asignadoA && event.asignadoA !== event.creadoPor && (
+                    <div className="flex items-center text-sm text-blue-600">
+                      <User className="h-4 w-4 mr-2" />
+                      Asignado a: {getCreatorName(event.asignadoA)}
+                    </div>
+                  )}
+                  
                   <div className="pt-3 border-t">
                     <div className="flex gap-2">
                       <Link href={`/eventos/${event.id}`} className="flex-1">
