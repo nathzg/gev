@@ -3,6 +3,7 @@ import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 import { db } from '@/lib/database'
 import { requireAuth } from '@/lib/auth'
+import { logReportUpload } from '@/lib/audit'
 
 export async function POST(
   request: NextRequest,
@@ -136,6 +137,9 @@ export async function POST(
     }
 
     const updatedEvent = await db.updateEvent(eventId, { informe })
+
+    // Registrar en logs de auditoría
+    await logReportUpload(session.email, eventId, event.titulo)
 
     return NextResponse.json({
       success: true,

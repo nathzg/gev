@@ -52,6 +52,11 @@ export interface Event {
     videos: string[]
     subidoEn: string
   }
+  qrCode?: {
+    data: string
+    url: string
+    generadoEn: string
+  }
   createdAt: string
   updatedAt: string
 }
@@ -64,10 +69,20 @@ export interface Pregunta {
   createdAt: string
 }
 
+export interface Log {
+  id: string
+  timestamp: string
+  actor: string
+  action: string
+  targetId?: string
+  meta?: Record<string, any>
+}
+
 class Database {
   private usersFile = path.join(DATA_DIR, 'users.json')
   private eventsFile = path.join(DATA_DIR, 'events.json')
   private preguntasFile = path.join(DATA_DIR, 'preguntas.json')
+  private logsFile = path.join(DATA_DIR, 'logs.json')
 
   // Inicializar archivos si no existen
   private initializeFiles() {
@@ -79,6 +94,9 @@ class Database {
     }
     if (!fs.existsSync(this.preguntasFile)) {
       fs.writeFileSync(this.preguntasFile, JSON.stringify([], null, 2))
+    }
+    if (!fs.existsSync(this.logsFile)) {
+      fs.writeFileSync(this.logsFile, JSON.stringify([], null, 2))
     }
   }
 
@@ -197,6 +215,40 @@ class Database {
   async getPreguntasByEventId(eventId: string): Promise<Pregunta[]> {
     const preguntas = await this.getPreguntas()
     return preguntas.filter(p => p.eventId === eventId)
+  }
+
+  // Logs de auditoría
+  async getLogs(): Promise<Log[]> {
+    this.initializeFiles()
+    const data = fs.readFileSync(this.logsFile, 'utf8')
+    return JSON.parse(data)
+  }
+
+  async saveLogs(logs: Log[]): Promise<void> {
+    this.initializeFiles()
+    fs.writeFileSync(this.logsFile, JSON.stringify(logs, null, 2))
+  }
+
+  async createLog(log: Omit<Log, 'id' | 'timestamp'>): Promise<Log> {
+    const logs = await this.getLogs()
+    const newLog: Log = {
+      ...log,
+      id: `log_${Date.now()}`,
+      timestamp: new Date().toISOString()
+    }
+    logs.push(newLog)
+    await this.saveLogs(logs)
+    return newLog
+  }
+
+  async getLogsByAction(action: string): Promise<Log[]> {
+    const logs = await this.getLogs()
+    return logs.filter(log => log.action === action)
+  }
+
+  async getLogsByActor(actor: string): Promise<Log[]> {
+    const logs = await this.getLogs()
+    return logs.filter(log => log.actor === actor)
   }
 }
 

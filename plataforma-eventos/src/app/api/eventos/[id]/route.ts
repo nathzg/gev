@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import { db } from '@/lib/database'
+import { logEventUpdate, logEventDeletion } from '@/lib/audit'
 
 export async function GET(
   request: NextRequest,
@@ -83,6 +84,9 @@ export async function PUT(
       )
     }
 
+    // Registrar en logs de auditoría
+    await logEventUpdate(session.email, updatedEvent.id, updatedEvent.titulo)
+
     return NextResponse.json({ success: true, event: updatedEvent })
   } catch (error) {
     console.error('Error actualizando evento:', error)
@@ -133,6 +137,9 @@ export async function DELETE(
         { status: 500 }
       )
     }
+
+    // Registrar en logs de auditoría
+    await logEventDeletion(session.email, event.id, event.titulo)
 
     return NextResponse.json({ success: true, message: 'Evento eliminado exitosamente' })
   } catch (error) {

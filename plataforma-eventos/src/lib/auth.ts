@@ -144,7 +144,7 @@ export async function register(userData: {
   celular: string
   sector: string
   password: string
-}): Promise<{ success: boolean; message: string }> {
+}): Promise<{ success: boolean; message: string; user?: User }> {
   try {
     const users = await db.getUsers()
     
@@ -158,14 +158,14 @@ export async function register(userData: {
     const hashedPassword = await hashPassword(userData.password)
     
     // Crear usuario (solo colaborador, pendiente de aprobación)
-    await db.createUser({
+    const newUser = await db.createUser({
       ...userData,
       password: hashedPassword,
       rol: 'colaborador',
       aprobado: false
     })
     
-    return { success: true, message: 'Registro exitoso. Tu cuenta está pendiente de aprobación.' }
+    return { success: true, message: 'Registro exitoso. Tu cuenta está pendiente de aprobación.', user: newUser }
   } catch (error) {
     console.error('Error en registro:', error)
     return { success: false, message: 'Error interno del servidor' }

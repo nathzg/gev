@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAdmin } from '@/lib/auth'
 import { db } from '@/lib/database'
+import { logUserApproval } from '@/lib/audit'
 
 export async function POST(
   request: NextRequest,
@@ -35,6 +36,9 @@ export async function POST(
         { status: 500 }
       )
     }
+
+    // Registrar en logs de auditoría
+    await logUserApproval(session.email, updatedUser.id, updatedUser.email)
 
     return NextResponse.json({ 
       success: true, 

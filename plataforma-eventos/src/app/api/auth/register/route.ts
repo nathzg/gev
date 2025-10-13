@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { register } from '@/lib/auth'
+import { logUserRegistration } from '@/lib/audit'
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,6 +21,11 @@ export async function POST(request: NextRequest) {
       sector,
       password
     })
+
+    // Registrar en logs de auditoría si el registro fue exitoso
+    if (result.success && result.user) {
+      await logUserRegistration(email, result.user.id, email)
+    }
     
     return NextResponse.json(result)
   } catch (error) {

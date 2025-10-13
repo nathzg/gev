@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import { db } from '@/lib/database'
+import { logEventFinalization } from '@/lib/audit'
 
 export async function POST(
   request: NextRequest,
@@ -51,6 +52,9 @@ export async function POST(
         { status: 500 }
       )
     }
+
+    // Registrar en logs de auditoría
+    await logEventFinalization(session.email, updatedEvent.id, updatedEvent.titulo)
 
     return NextResponse.json({ 
       success: true, 

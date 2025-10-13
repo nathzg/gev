@@ -14,7 +14,7 @@ interface QRCodeModalProps {
 
 export default function QRCodeModal({ eventId, eventTitle, isOpen, onClose }: QRCodeModalProps) {
   const [loading, setLoading] = useState(false)
-  const [qrData, setQrData] = useState<{ qrCode: string; url: string } | null>(null)
+  const [qrData, setQrData] = useState<{ qrCode: string; url: string; generadoEn?: string } | null>(null)
   const [error, setError] = useState('')
 
   const generateQR = async () => {
@@ -80,10 +80,10 @@ export default function QRCodeModal({ eventId, eventTitle, isOpen, onClose }: QR
             <div className="text-center">
               <QrCode className="h-16 w-16 mx-auto text-gray-400 mb-4" />
               <p className="text-gray-600 mb-4">
-                Haz clic en el botón para generar el código QR
+                Haz clic en el botón para obtener el código QR
               </p>
               <Button onClick={generateQR} disabled={loading}>
-                {loading ? 'Generando...' : 'Generar QR Code'}
+                {loading ? 'Cargando...' : 'Obtener QR Code'}
               </Button>
             </div>
           )}
@@ -101,6 +101,11 @@ export default function QRCodeModal({ eventId, eventTitle, isOpen, onClose }: QR
               <div className="p-3 bg-gray-50 rounded-md">
                 <p className="text-sm text-gray-600 mb-2">URL de preguntas:</p>
                 <p className="text-xs font-mono break-all">{qrData.url}</p>
+                {qrData.generadoEn && (
+                  <p className="text-xs text-gray-500 mt-2">
+                    Generado el: {new Date(qrData.generadoEn).toLocaleString('es-ES')}
+                  </p>
+                )}
               </div>
 
               <div className="flex gap-2">

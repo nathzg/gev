@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/database'
+import { logPublicQuestion } from '@/lib/audit'
 
 export async function POST(
   request: NextRequest,
@@ -48,6 +49,9 @@ export async function POST(
       nombre: nombre?.trim() || undefined,
       pregunta: pregunta.trim()
     })
+
+    // Registrar en logs de auditoría
+    await logPublicQuestion('público', eventId, event.titulo)
 
     return NextResponse.json({
       success: true,
