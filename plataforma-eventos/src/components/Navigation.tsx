@@ -43,10 +43,12 @@ export default function Navigation() {
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' })
-      router.push('/login')
+      // Hacer logout y redirigir
+      window.location.href = '/api/auth/logout'
     } catch (error) {
       console.error('Error cerrando sesión:', error)
+      // Fallback: redirigir manualmente
+      router.push('/login')
     }
   }
 

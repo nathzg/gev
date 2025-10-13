@@ -4,13 +4,12 @@ import { destroySession } from '@/lib/auth'
 export async function POST() {
   try {
     await destroySession()
-    return NextResponse.json({ success: true, message: 'Sesión cerrada exitosamente' })
+    // Redirigir al login en lugar de devolver JSON
+    return NextResponse.redirect(new URL('/login', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'))
   } catch (error) {
     console.error('Error en API logout:', error)
-    return NextResponse.json(
-      { success: false, message: 'Error interno del servidor' },
-      { status: 500 }
-    )
+    // En caso de error, también redirigir al login
+    return NextResponse.redirect(new URL('/login', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'))
   }
 }
 
