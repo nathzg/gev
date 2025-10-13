@@ -25,7 +25,7 @@ export default async function EventosPage() {
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Eventos</h1>
           <p className="text-gray-600 mt-2">
-            Bienvenido, {session.nombre} {session.apellido}
+            Gestiona todos los eventos de la plataforma
           </p>
         </div>
         

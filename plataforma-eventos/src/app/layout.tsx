@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { seedDatabase } from '@/lib/seed'
+import Navigation from '@/components/Navigation'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -22,6 +23,7 @@ export default async function RootLayout({
     <html lang="es">
       <body className={inter.className}>
         <div className="min-h-screen bg-background">
+          <Navigation />
           {children}
         </div>
       </body>

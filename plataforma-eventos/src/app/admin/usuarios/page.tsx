@@ -16,10 +16,6 @@ export default async function AdminUsuariosPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <Link href="/eventos" className="inline-flex items-center text-primary hover:underline mb-4">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Volver a Eventos
-        </Link>
         <h1 className="text-3xl font-bold text-gray-900">Administración de Usuarios</h1>
         <p className="text-gray-600 mt-2">
           Gestiona los usuarios del sistema
