@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { seedDatabase } from '@/lib/seed'
 import Navigation from '@/components/Navigation'
+import { Toaster } from '@/components/ui/toaster'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -25,6 +26,7 @@ export default async function RootLayout({
         <div className="min-h-screen bg-background">
           <Navigation />
           {children}
+          <Toaster />
         </div>
       </body>
     </html>

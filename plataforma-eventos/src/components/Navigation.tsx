@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Settings, BarChart3, FileText, LogOut, Calendar, Users } from 'lucide-react'
+import { Settings, BarChart3, FileText, LogOut, Calendar, Users, Menu, X, Home } from 'lucide-react'
 
 interface SessionUser {
   id: string
@@ -18,6 +18,7 @@ interface SessionUser {
 export default function Navigation() {
   const [session, setSession] = useState<SessionUser | null>(null)
   const [loading, setLoading] = useState(true)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
 
@@ -74,17 +75,28 @@ export default function Navigation() {
   }
 
   return (
-    <div className="bg-white shadow-sm border-b">
+    <div className="bg-white shadow-sm border-b sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo/Título */}
           <div className="flex items-center">
             <Calendar className="h-8 w-8 text-blue-600 mr-2" />
-            <h1 className="text-xl font-bold text-gray-900">Plataforma de Eventos</h1>
+            <h1 className="text-xl font-bold text-gray-900 hidden sm:block">Plataforma de Eventos</h1>
+            <h1 className="text-lg font-bold text-gray-900 sm:hidden">Eventos</h1>
           </div>
 
-          {/* Navegación */}
-          <div className="flex items-center space-x-4">
+          {/* Navegación Desktop */}
+          <div className="hidden md:flex items-center space-x-2">
+            {/* Botón de Inicio */}
+            <Button
+              variant={pathname === '/eventos' ? 'default' : 'ghost'}
+              onClick={() => router.push('/eventos')}
+              className="flex items-center"
+            >
+              <Home className="h-4 w-4 mr-2" />
+              Inicio
+            </Button>
+
             {/* Botón de Eventos */}
             <Button
               variant={pathname === '/eventos' ? 'default' : 'ghost'}
@@ -142,7 +154,7 @@ export default function Navigation() {
 
             {/* Información del usuario */}
             <div className="flex items-center space-x-2">
-              <div className="text-sm text-gray-700">
+              <div className="text-sm text-gray-700 hidden lg:block">
                 <span className="font-medium">{session.nombre} {session.apellido}</span>
                 {session.rol === 'admin' && (
                   <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
@@ -157,11 +169,103 @@ export default function Navigation() {
                 className="flex items-center"
               >
                 <LogOut className="h-4 w-4 mr-1" />
-                Salir
+                <span className="hidden sm:inline">Salir</span>
               </Button>
             </div>
           </div>
+
+          {/* Botón de menú móvil */}
+          <div className="md:hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          </div>
         </div>
+
+        {/* Menú móvil */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t bg-white">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              <Button
+                variant={pathname === '/eventos' ? 'default' : 'ghost'}
+                onClick={() => {
+                  router.push('/eventos')
+                  setMobileMenuOpen(false)
+                }}
+                className="w-full justify-start"
+              >
+                <Home className="h-4 w-4 mr-2" />
+                Inicio
+              </Button>
+              
+              <Button
+                variant={pathname === '/eventos/nuevo' ? 'default' : 'ghost'}
+                onClick={() => {
+                  router.push('/eventos/nuevo')
+                  setMobileMenuOpen(false)
+                }}
+                className="w-full justify-start"
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                Nuevo Evento
+              </Button>
+
+              {session.rol === 'admin' && (
+                <>
+                  <Button
+                    variant={pathname === '/admin/dashboard' ? 'default' : 'ghost'}
+                    onClick={() => {
+                      router.push('/admin/dashboard')
+                      setMobileMenuOpen(false)
+                    }}
+                    className="w-full justify-start"
+                  >
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Dashboard
+                  </Button>
+                  
+                  <Button
+                    variant={pathname === '/admin/usuarios' ? 'default' : 'ghost'}
+                    onClick={() => {
+                      router.push('/admin/usuarios')
+                      setMobileMenuOpen(false)
+                    }}
+                    className="w-full justify-start"
+                  >
+                    <Users className="h-4 w-4 mr-2" />
+                    Usuarios
+                  </Button>
+                </>
+              )}
+
+              <div className="pt-2 border-t">
+                <div className="text-sm text-gray-700 mb-2 px-3">
+                  <span className="font-medium">{session.nombre} {session.apellido}</span>
+                  {session.rol === 'admin' && (
+                    <span className="ml-2 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                      Admin
+                    </span>
+                  )}
+                </div>
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    handleLogout()
+                    setMobileMenuOpen(false)
+                  }}
+                  className="w-full justify-start"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Cerrar Sesión
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
